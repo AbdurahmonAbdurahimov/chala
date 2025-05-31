@@ -1,0 +1,59 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📊 Monthly Meal Report</h2>
+  </div>
+
+  <div class="card shadow-lg mb-4">
+    <div class="card-header bg-info text-white">
+      Meal Servings per Month
+    </div>
+    <div class="card-body">
+      <canvas id="reportChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const data = {
+    labels: {{ chart_data.labels|safe }},
+    datasets: [{
+      label: 'Meals Served',
+      data: {{ chart_data.values|safe }},
+      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 2,
+      borderRadius: 5,
+    }]
+  };
+
+  const config = {
+    type: 'bar',
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#000' }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} meals`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+  new Chart(document.getElementById('reportChart'), config);
+</script>
+{% endblock %}

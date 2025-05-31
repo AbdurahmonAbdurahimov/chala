@@ -1,0 +1,1 @@
+# Full Kindergarten Meal Tracking System with Django, Celery, Channels, Chart.js

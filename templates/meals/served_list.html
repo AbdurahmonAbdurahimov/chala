@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Served Meals{% endblock %}
+{% block header %}Served Meals{% endblock %}
+{% block actions %}
+  <a href="/api/meals/served-meals/new/" class="btn btn-success">+ Serve Meal</a>
+{% endblock %}
+{% block back %}{% endblock %}
+{% block content %}
+  <table class="table">
+    <thead><tr><th>Date</th><th>Meal</th><th>By</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for sm in served_meals %}
+        <tr>
+          <td>{{ sm.served_at }}</td>
+          <td>{{ sm.meal.name }}</td>
+          <td>{{ sm.served_by.username }}</td>
+          <td>{{ sm.success|yesno:"Success,Failed" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

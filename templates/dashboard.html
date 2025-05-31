@@ -1,0 +1,90 @@
+
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">👨‍🍳 Kindergarten Admin Dashboard</h2>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <p class="card-text display-6">{{ stats.users }}</p>
+          <a href="/admin/auth/user/" class="btn btn-outline-light btn-sm">Manage</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Ingredients</h5>
+          <p class="card-text display-6">{{ stats.ingredients }}</p>
+          <a href="{% url 'ingredient-list' %}" class="btn btn-outline-light btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Meals</h5>
+          <p class="card-text display-6">{{ stats.meals }}</p>
+          <a href="{% url 'meal-list' %}" class="btn btn-outline-light btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Served Meals</h5>
+          <p class="card-text display-6">{{ stats.served_meals }}</p>
+          <a href="/meals/served/" class="btn btn-outline-light btn-sm">History</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      📊 Monthly Meal Summary
+    </div>
+    <div class="card-body">
+      <canvas id="summaryChart" height="80"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('summaryChart').getContext('2d');
+const summaryChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: {{ chart_data.labels|safe }},
+    datasets: [
+      {
+        label: 'Served Portions',
+        data: {{ chart_data.served|safe }},
+        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+      },
+      {
+        label: 'Possible Portions',
+        data: {{ chart_data.possible|safe }},
+        backgroundColor: 'rgba(255, 206, 86, 0.6)'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

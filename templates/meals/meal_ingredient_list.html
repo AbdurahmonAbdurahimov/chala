@@ -1,0 +1,28 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>🥘 Meal Ingredients</h2>
+    <a href="{% url 'meal-ingredient-create' %}" class="btn btn-success">➕ Add Meal Ingredient</a>
+  </div>
+  <table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+      <tr><th>Meal</th><th>Ingredient</th><th>Quantity Required (g)</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for i in items %}
+      <tr>
+        <td>{{ i.meal.name }}</td>
+        <td>{{ i.ingredient.name }}</td>
+        <td>{{ i.quantity_required }}</td>
+        <td>
+          <a href="{% url 'meal-ingredient-update' i.id %}" class="btn btn-sm btn-outline-primary">✏️ Edit</a>
+          <a href="{% url 'meal-ingredient-delete' i.id %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

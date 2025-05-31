@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h2>📊 Kitchen Metrics Dashboard</h2>
+<ul class="list-group">
+  <li class="list-group-item">🍽 Meals served today: <strong>{{ served_today }}</strong></li>
+  <li class="list-group-item">⚠️ Ingredients low in stock: <strong>{{ low_stock }}</strong></li>
+</ul>
+
+<h3 class="mt-4">🔥 Most Frequently Served Meals</h3>
+<table class="table table-striped">
+  <thead><tr><th>Meal</th><th>Times Served</th></tr></thead>
+  <tbody>
+    {% for item in most_served %}
+    <tr><td>{{ item.meal__name }}</td><td>{{ item.total }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3 class="mt-5">📈 Monthly Served Meals Chart</h3>
+<canvas id="monthlyChart" height="100"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ chart_labels|safe }},
+      datasets: [{
+        label: 'Meals Served',
+        data: {{ chart_values|safe }},
+        fill: false,
+        borderColor: 'blue',
+        tension: 0.1
+      }]
+    }
+  });
+</script>
+{% endblock %}

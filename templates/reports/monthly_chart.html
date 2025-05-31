@@ -1,0 +1,58 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>📅 Monthly Chart Overview</h2>
+  <div class="card shadow-sm mt-3">
+    <div class="card-header bg-secondary text-white">
+      Meals Trend (Line Chart)
+    </div>
+    <div class="card-body">
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const monthlyData = {
+    labels: {{ chart_data.labels|safe }},
+    datasets: [{
+      label: 'Meals per Month',
+      data: {{ chart_data.values|safe }},
+      backgroundColor: 'rgba(255, 99, 132, 0.4)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true
+    }]
+  };
+
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: monthlyData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#000' }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.y} meals`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

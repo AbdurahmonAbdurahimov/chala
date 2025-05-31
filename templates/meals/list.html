@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Meals{% endblock %}
+{% block header %}Meal Management{% endblock %}
+{% block actions %}
+  <a href="/api/meals/create/" class="btn btn-success mb-3">+ Add Meal</a>
+{% endblock %}
+{% block content %}
+  {% for meal in meals %}
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ meal.name }}</h5>
+          <p><strong>Ingredients:</strong></p>
+          <ul>
+            {% for ingredient in meal.ingredients.all %}
+              <li>{{ ingredient.name }} ({{ ingredient.mealingredient.quantity }}g)</li>
+            {% endfor %}
+          </ul>
+          <a href="/api/meals/{{ meal.id }}/" class="btn btn-outline-primary btn-sm">View</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

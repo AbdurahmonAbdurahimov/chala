@@ -1,0 +1,44 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">🍽 Serve a Meal</h4>
+    </div>
+    <div class="card-body">
+      <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="meal" class="form-label">Select Meal:</label>
+          <select name="meal_id" class="form-select" required>
+            <option value="">-- Select a Meal --</option>
+            {% for meal in meals %}
+              <option value="{{ meal.id }}">{{ meal.name }}</option>
+            {% endfor %}
+          </select>
+          <div class="invalid-feedback">Please select a meal.</div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-success">✅ Serve Meal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+{% endblock %}

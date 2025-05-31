@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Portion Estimates</h2>
+<table class="table table-striped">
+  <thead>
+    <tr><th>Meal</th><th>Estimated Portions</th></tr>
+  </thead>
+  <tbody>
+    {% for meal, count in estimates.items %}
+      <tr><td>{{ meal }}</td><td>{{ count }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

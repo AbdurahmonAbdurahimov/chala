@@ -1,0 +1,20 @@
+[
+  {
+    "model": "inventory.ingredient",
+    "pk": 1,
+    "fields": {
+      "name": "Potato",
+      "quantity": 5000,
+      "min_quantity": 300
+    }
+  },
+  {
+    "model": "inventory.ingredient",
+    "pk": 2,
+    "fields": {
+      "name": "Carrot",
+      "quantity": 3000,
+      "min_quantity": 200
+    }
+  }
+]

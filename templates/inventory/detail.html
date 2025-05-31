@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Ingredient Details{% endblock %}
+{% block header %}Ingredient: {{ ingredient.name }}{% endblock %}
+{% block content %}
+  <div class="col-md-6 offset-md-3">
+    <div class="card p-4 shadow-sm">
+      <p><strong>Quantity:</strong> {{ ingredient.quantity }}g</p>
+      <p><strong>Minimum Quantity:</strong> {{ ingredient.min_quantity }}g</p>
+      <p><strong>Delivery Date:</strong> {{ ingredient.delivery_date }}</p>
+      <p class="text-muted">Last updated: {{ ingredient.updated_at }}</p>
+      <a href="/api/inventory/ingredients/{{ ingredient.id }}/edit/" class="btn btn-primary">Edit</a>
+    </div>
+  </div>
+{% endblock %}

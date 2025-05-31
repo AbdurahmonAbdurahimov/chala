@@ -1,0 +1,15 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="alert alert-warning shadow-sm" role="alert">
+    <h4 class="alert-heading">⚠️ Confirm Deletion</h4>
+    <p>Are you sure you want to delete <strong>{{ object.name }}</strong> from the inventory?</p>
+    <form method="post">
+      {% csrf_token %}
+      <a href="{% url 'ingredient-list' %}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

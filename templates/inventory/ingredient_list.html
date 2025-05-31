@@ -1,0 +1,82 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>🧂 Ingredients</h2>
+    <a href="{% url 'ingredient-create' %}" class="btn btn-success">➕ Add Ingredient</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>Name</th>
+          <th>Quantity (g)</th>
+          <th>Minimum Required</th>
+          <th style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in ingredients %}
+        <tr>
+          <td>{{ i.name }}</td>
+          <td>{{ i.quantity }}</td>
+          <td>{{ i.min_quantity }}</td>
+          <td>
+            <a href="{% url 'ingredient-update' i.id %}" class="btn btn-sm btn-outline-primary">✏️ Edit</a>
+            <a href="{% url 'ingredient-delete' i.id %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+<script>
+  const socket = new WebSocket(
+    'ws://' + window.location.host + '/ws/inventory/'
+  );
+
+  socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    console.log("WebSocket message:", data);
+    if (data.includes("Inventory updated")) {
+      location.reload(); // simple reload on update
+    }
+  };
+
+  socket.onopen = () => console.log("WebSocket connected to inventory group.");
+  socket.onerror = e => console.error("WebSocket error:", e);
+</script>
+
+
+<script>
+const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/inventory/`);
+
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.status === "updated") {
+        console.log("Inventory updated, reloading...");
+        location.reload();
+    }
+};
+</script>
+
+
+<script>
+  const socket = new WebSocket("ws://" + window.location.host + "/ws/inventory/");
+
+  socket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    console.log("Update received:", data.message);
+    location.reload(); // Reload to reflect updated inventory
+  };
+
+  socket.onclose = function () {
+    console.warn("Inventory WebSocket closed unexpectedly.");
+  };
+</script>

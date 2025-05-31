@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Login</h2>
+<form method="post" class="needs-validation" novalidate>
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="username" class="form-label">Username:</label>
+    <input type="text" name="username" class="form-control" required>
+    <div class="invalid-feedback">Username is required.</div>
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password:</label>
+    <input type="password" name="password" class="form-control" required>
+    <div class="invalid-feedback">Password is required.</div>
+  </div>
+  <button type="submit" class="btn btn-success">Login</button>
+</form>
+
+<script>
+  (() => {
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+{% endblock %}
