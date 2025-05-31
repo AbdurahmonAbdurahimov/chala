@@ -1,14 +1,8 @@
 
 from django import forms
-from .models import MealIngredient
+from .models import Meal
 
-class MealIngredientForm(forms.ModelForm):
+class MealForm(forms.ModelForm):
     class Meta:
-        model = MealIngredient
-        fields = ['meal', 'ingredient', 'quantity_required']
-        widgets = {
-            'meal': forms.Select(attrs={'class': 'form-select'}),
-            'ingredient': forms.Select(attrs={'class': 'form-select'}),
-            'quantity_required': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
-    
+        model = Meal
+        fields = ['name']  # Maydonlarni kerak bo'lsa kengaytirish mumkin

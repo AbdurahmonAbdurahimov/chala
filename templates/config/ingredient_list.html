@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Ingredients</title></head>
+<body>
+    <h1>Ingredient List</h1>
+    <a href="{% url 'ingredient-create' %}">+ Add Ingredient</a>
+    <ul>
+        {% for ingredient in ingredients %}
+            <li>
+                {{ ingredient.name }} - {{ ingredient.quantity }}g
+                (<a href="{% url 'ingredient-update' ingredient.id %}">Edit</a> |
+                 <a href="{% url 'ingredient-delete' ingredient.id %}">Delete</a>)
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

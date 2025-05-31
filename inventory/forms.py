@@ -1,7 +1,8 @@
+
 from django import forms
 from .models import Ingredient
 
 class IngredientForm(forms.ModelForm):
     class Meta:
         model = Ingredient
-        fields = ['name', 'quantity', 'min_quantity']
+        fields = ['name', 'quantity', 'delivery_date']

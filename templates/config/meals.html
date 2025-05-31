@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meal Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Meals</h2>
+  <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addMealModal">+ Add Meal</button>
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Ingredients</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for meal in meals %}
+      <tr>
+        <td>{{ meal.name }}</td>
+        <td>
+          <ul>
+            {% for item in meal.mealingredient_set.all %}
+              <li>{{ item.ingredient.name }} ({{ item.quantity_required }}g)</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editMealModal{{ meal.id }}">Edit</button>
+          <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMealModal{{ meal.id }}">Delete</button>
+        </td>
+      </tr>
+
+      <!-- Edit Meal Modal -->
+      <div class="modal fade" id="editMealModal{{ meal.id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <form method="POST" action="{% url 'meal-update' meal.id %}" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Meal</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <input type="text" name="name" class="form-control mb-3" value="{{ meal.name }}" required>
+              <div class="mb-3">
+                <label>Select Ingredients and Quantity:</label>
+                {% for ingredient in ingredients %}
+                  <div class="input-group mb-2">
+                    <span class="input-group-text">{{ ingredient.name }}</span>
+                    <input type="number" class="form-control" name="ingredient_{{ ingredient.id }}" value="{% for mi in meal.mealingredient_set.all %}{% if mi.ingredient.id == ingredient.id %}{{ mi.quantity_required }}{% endif %}{% endfor %}">
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete Meal Modal -->
+      <div class="modal fade" id="deleteMealModal{{ meal.id }}" tabindex="-1">
+        <div class="modal-dialog">
+          <form method="POST" action="{% url 'meal-delete' meal.id %}" class="modal-content">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title">Delete Meal</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete "{{ meal.name }}"?
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Add Meal Modal -->
+<div class="modal fade" id="addMealModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <form method="POST" action="{% url 'meal-create' %}" class="modal-content">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title">Add Meal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="name" class="form-control mb-3" placeholder="Meal name" required>
+        <div class="mb-3">
+          <label>Select Ingredients and Quantity:</label>
+          {% for ingredient in ingredients %}
+            <div class="input-group mb-2">
+              <span class="input-group-text">{{ ingredient.name }}</span>
+              <input type="number" class="form-control" name="ingredient_{{ ingredient.id }}" placeholder="Quantity in grams">
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

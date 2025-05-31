@@ -1,89 +1,94 @@
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.utils.timezone import now
-from django.db.models.functions import TruncMonth
-from django.db.models import Count
-
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-
-from meals.models import Meal, MealIngredient, ServedMeal
-from inventory.models import Ingredient
-
-@login_required
-def serve_meal_view(request):
-    if request.method == 'POST':
-        meal_id = request.POST.get('meal_id')
-        meal = Meal.objects.get(id=meal_id)
-        ingredients_needed = MealIngredient.objects.filter(meal=meal)
-
-        for item in ingredients_needed:
-            if item.ingredient.quantity < item.quantity_required:
-                messages.error(request, f"Insufficient {item.ingredient.name}")
-                return redirect('serve-meal')
-
-        for item in ingredients_needed:
-            item.ingredient.quantity -= item.quantity_required
-            item.ingredient.save()
-
-        ServedMeal.objects.create(
-            meal=meal,
-            served_by=request.user,
-            served_at=now(),
-            success=True
-        )
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'inventory',
-            {
-                'type': 'inventory_update',
-                'message': 'Inventory updated after serving meal.'
-            }
-        )
-        messages.success(request, f"{meal.name} served successfully!")
-        return redirect('serve-meal')
-
-    meals = Meal.objects.all()
-    return render(request, 'meals/serve.html', {'meals': meals})
-
-@login_required
-def portion_estimate_view(request):
-    meals = Meal.objects.all()
-    estimates = {}
-
-    for meal in meals:
-        ingredients = MealIngredient.objects.filter(meal=meal)
-        portions = []
-
-        for item in ingredients:
-            if item.quantity_required == 0:
-                portions.append(0)
-            else:
-                portions.append(item.ingredient.quantity // item.quantity_required)
-
-        if portions:
-            estimates[meal.name] = int(min(portions))
-        else:
-            estimates[meal.name] = 0
-
-    return render(request, 'meals/portions.html', {'estimates': estimates})
-
-@login_required
-def chart_view(request):
-    data = (
-        ServedMeal.objects
-        .annotate(month=TruncMonth('served_at'))
-        .values('month')
-        .annotate(count=Count('id'))
-        .order_by('month')
-    )
-    chart_data = {
-        'labels': [d['month'].strftime('%B %Y') for d in data],
-        'values': [d['count'] for d in data],
-    }
-    return render(request, 'reports/chart.html', {'chart_data': chart_data})
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'admin/dashboard.html')
+    return render(request, "config/dashboard.html")
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def meal_create_view(request):
+    return render(request, "config/meal_create.html")
+
+@login_required
+def meal_update_view(request, meal_id=None):
+    return render(request, "config/meal_update.html", {"meal_id": meal_id})
+
+@login_required
+def meal_delete_view(request, meal_id=None):
+    return render(request, "config/meal_delete.html", {"meal_id": meal_id})
+
+from meals.forms import MealForm
+
+@login_required
+def meal_create_view(request):
+    if request.method == 'POST':
+        form = MealForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('meal-list')
+    else:
+        form = MealForm()
+    return render(request, "config/meal_create.html", {"form": form})
+
+@login_required
+def meal_update_view(request, meal_id=None):
+    meal = get_object_or_404(Meal, id=meal_id)
+    if request.method == 'POST':
+        form = MealForm(request.POST, instance=meal)
+        if form.is_valid():
+            form.save()
+            return redirect('meal-list')
+    else:
+        form = MealForm(instance=meal)
+    return render(request, "config/meal_update.html", {"form": form, "meal": meal})
+
+@login_required
+def meal_delete_view(request, meal_id=None):
+    meal = get_object_or_404(Meal, id=meal_id)
+    if request.method == 'POST':
+        meal.delete()
+        return redirect('meal-list')
+    return render(request, "config/meal_delete.html", {"meal": meal})
+
+from inventory.forms import IngredientForm
+from inventory.models import Ingredient
+
+@login_required
+def ingredient_list_view(request):
+    ingredients = Ingredient.objects.all()
+    return render(request, "config/ingredient_list.html", {"ingredients": ingredients})
+
+@login_required
+def ingredient_create_view(request):
+    if request.method == 'POST':
+        form = IngredientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ingredient-list')
+    else:
+        form = IngredientForm()
+    return render(request, "config/ingredient_create.html", {"form": form})
+
+@login_required
+def ingredient_update_view(request, ingredient_id=None):
+    ingredient = get_object_or_404(Ingredient, id=ingredient_id)
+    if request.method == 'POST':
+        form = IngredientForm(request.POST, instance=ingredient)
+        if form.is_valid():
+            form.save()
+            return redirect('ingredient-list')
+    else:
+        form = IngredientForm(instance=ingredient)
+    return render(request, "config/ingredient_update.html", {"form": form, "ingredient": ingredient})
+
+@login_required
+def ingredient_delete_view(request, ingredient_id=None):
+    ingredient = get_object_or_404(Ingredient, id=ingredient_id)
+    if request.method == 'POST':
+        ingredient.delete()
+        return redirect('ingredient-list')
+    return render(request, "config/ingredient_delete.html", {"ingredient": ingredient})
